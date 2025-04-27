@@ -1,36 +1,37 @@
-package com.SmartContactManager.Service;
+package com.SmartContactManager.Controller;
 
 import com.SmartContactManager.Entity.User;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import com.SmartContactManager.Service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
+@Controller
 public class UserController {
 
-    private SessionFactory sessionFactory;
-
-    public UserController() {
-        sessionFactory = new Configuration().configure("hibernate.cfg.xml")
-                .addAnnotatedClass(User.class)
-                .buildSessionFactory();
-    }
+    @Autowired
+    private UserService userService;
 
     public User findByEmailAndPassword(String email, String password) {
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.beginTransaction();
+        return userService.findByEmailAndPassword(email, password);
+    }
 
-            // Query to find user by email and password
-            User user = session.createQuery("from User where email=:email and password=:password", User.class)
-                    .setParameter("email", email)
-                    .setParameter("password", password)
-                    .uniqueResult();
+    public Long saveUser(User user) {
+        return userService.saveUser(user);
+    }
 
-            session.getTransaction().commit();
-            return user;
+    public User getUserById(int id) {
+        return userService.getUserById(id);
+    }
 
-        } finally {
-            session.close();
-        }
+    public void updateUser(User user) {
+        userService.updateUser(user.getId(), user);
+
+        // Make sure 'User' is properly imported
+    }
+
+    public void deleteUser(int id) {
+        userService.deleteUser(id);
     }
 }
